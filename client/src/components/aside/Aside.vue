@@ -2,7 +2,7 @@
   <div class="aside">
       <h4>aside的部分</h4>
       <ul>
-          <li class="active" v-for="(item,index) in menus" :key="index">
+          <li class="" v-for="(item,index) in menus" :key="index">
               <span><i :class="item.icon"></i>{{item.name}}</span>
           </li>
       </ul>

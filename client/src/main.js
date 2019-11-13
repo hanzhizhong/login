@@ -6,6 +6,7 @@ import "heyui/themes/index.less";
 import "heyui/themes/common.less";
 import "animate.css"
 
+
 import { install, Prototypes, Button, DropdownMenu } from 'heyui';
 Vue.use(install,{components:{Button, DropdownMenu},prototypes:Prototypes})
 
