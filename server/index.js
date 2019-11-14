@@ -8,4 +8,4 @@ app.use('/api/user',user)
 
 app.listen(9000,function(){
     console.log('server is running at port 9000')
-})
+}) 
