@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-
+import "animate.css"
 import "heyui/themes/index.less";
 import "heyui/themes/common.less";
-import "animate.css"
+
+import './assets/css/iconfont.css'
 
 
 import { install, Prototypes, Button, DropdownMenu } from 'heyui';

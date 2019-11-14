@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-header >top信息</v-header>
+    <v-header></v-header>
     <v-aside :menus="menus">左边</v-aside>
     <div class="main-content">
       <router-view></router-view>
@@ -22,7 +22,7 @@ export default {
         { name: "活动列表",icons:'icon iconfont icon-icon-test'},
         { name: "供应商",icons:'icon iconfont icon-icon-test37'},
         { name: "活动列表",icons:'icon iconfont icon-icon-test39'}
-      ]
+      ],
     };
   }
 };
