@@ -10,10 +10,14 @@ import NotExist from './pages/404/NotExist'
 //定制路径规则
 const routes=[
     {
-        path:'/login',name:'login',component:Login
+        path:'/login',name:'login',component:Login,meta:{
+            show:false
+        }
     },
     {
-        path:'/home',name:'index',component:Home
+        path:'/home',name:'index',component:Home,meta:{
+            show:true
+        }
     },
     {
         path:'/',redirect:{name:'index'}

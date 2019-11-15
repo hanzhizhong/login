@@ -1,10 +1,15 @@
 <template>
   <div id="app">
-    <v-header :menus="menus">top信息</v-header>
+    <template v-if="$route.meta.show">
+      <v-header :menus="menus">top信息</v-header>
     <v-aside>左边</v-aside>
     <div class="main-content">
       <router-view></router-view>
     </div>
+    </template>
+    <template v-else>
+      <router-view></router-view>
+    </template>
   </div>
 </template>
 
