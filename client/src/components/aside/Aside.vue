@@ -2,7 +2,7 @@
   <div class="aside">
     <h3>LOGO</h3>
     <ul>
-      <li class v-for="(item,index) in menus" :key="index">
+      <li @click="changePageByPath(item.path)" class v-for="(item,index) in menus" :key="index">
         <i :class="item.icons"></i>
         <span>{{item.name}}</span> 
       </li>
@@ -17,6 +17,11 @@ export default {
   },
   data() {
     return {};
+  },
+  methods:{
+    changePageByPath(path){
+      this.$router.push(path)
+    }
   }
 };
 </script>

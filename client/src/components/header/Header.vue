@@ -8,17 +8,14 @@
 </template>
 
 <script>
+import defaultImg from '../../assets/img/avatar.jpeg'
 export default {
     data(){
         return{
             username:'admin',
+            imgUrl:defaultImg,
         }
     },
-    computed:{
-        imgUrl(){
-            return '/public/favicon.ico'
-        }
-    }
 }
 </script>
 
