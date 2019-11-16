@@ -1,10 +1,9 @@
 <template>
   <div class="header">
       <div class="avatar">
-          <p><img :src="imgUrl" alt="用户头像"></p>{{username}}
+          <span><img :src="imgUrl"></span>{{username}}
       </div>
-      <Button>退出</Button>
-      <div><img src="../../assets/img/avatar.jpeg" alt=""></div>
+      <Button class="h-btn h-btn-no-border h-btn-text-red"><i class="icon iconfont icon-tuichu"></i>退出</Button>
   </div>
 </template>
 
@@ -13,7 +12,11 @@ export default {
     data(){
         return{
             username:'admin',
-            imgUrl:'../../assets/img/avatar.jpeg'
+        }
+    },
+    computed:{
+        imgUrl(){
+            return '/public/favicon.ico'
         }
     }
 }
@@ -31,17 +34,21 @@ export default {
         justify-content: flex-end;
     }
     .avatar{
-        display:flex;
-        align-content: center;
-        p{
+        min-width:100px;
+        vertical-align: middle;
+        line-height: 50px;
+        span{
             width:30px;
             height:30px;
             border-radius:50% 50%;
             overflow:hidden;
+            margin:10px 5px 0 0;
+            float:left;
         }
         img{
-            width:30px;
-            height:auto;
+            width:auto;
+            height:30px;
+            
         }
     }
 </style>
