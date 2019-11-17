@@ -12,14 +12,10 @@ router.get('/',(req,res)=>{
     })
 })
 
-
-
-
 //用户注册
 router.post('/register',(req,res)=>{
     let {username,password,age,gender,email}=req.body;
     User.find({username}).then(data=>{
-        console.log(data)
         if(data.length>0){
             res.json({
                 err:1,
@@ -29,10 +25,13 @@ router.post('/register',(req,res)=>{
             password=md5(password)
             let person=new User({username,password,age,gender,email})
             person.save().then(dat=>{
+                req.session.isLogin=true;
                 res.json({
                     err:0,
-                    msg:'注册成功了'
+                    msg:'注册成功了',
+                    data:{username,email,age,gender}
                 })
+                
             }).catch(err=>{
                 res.json({
                     err:2,
@@ -53,15 +52,32 @@ router.post('/login',(req,res)=>{
     password=md5(password)
     User.findOne({username,password}).then(data=>{
         if(data){
+            req.session.isLogin=true;
             res.json({
                 err:0,
-                msg:'登录成功'
+                msg:'登录成功',
+                data:{username,email:data.email,gender:data.gender,age:data.age}
             })
         }else{
-            res.json({
-                err:1,
-                msg:'用户名或密码错误'
+            User.find({username}).then(dat=>{
+                if(dat.length>0){
+                    res.json({
+                        err:1,
+                        msg:'用户密码错误'
+                    })
+                }else{
+                    res.json({
+                        err:2,
+                        msg:'新用户请先注册'
+                    })
+                }
+            }).catch(err=>{
+                res.json({
+                    err:-1,
+                    msg:`未知错误：${err}`
+                })
             })
+            
         }
     }).catch(err=>{
         res.json({

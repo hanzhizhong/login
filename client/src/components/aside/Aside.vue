@@ -20,9 +20,11 @@ export default {
   },
   methods:{
     changePageByPath(path){
-      this.$router.push(path)
+      this.$router.push(path).catch(err=>{
+        err
+      })
     }
-  }
+  } 
 };
 </script>
 
