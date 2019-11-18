@@ -17,7 +17,7 @@ const routes=[
         }
     },
     {
-        path:'/home',name:'index',component:Home,meta:{
+        path:'/home',name:'home',component:Home,meta:{
             show:true
         }
     },
@@ -32,7 +32,7 @@ const routes=[
         }
     },
     {
-        path:'/',redirect:{name:'index'}
+        path:'/',redirect:{name:'home'}
     },
     {
         path:'*',component:NotExist

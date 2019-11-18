@@ -22,6 +22,10 @@ const userSchema=mongoose.Schema({
         type:String,
         required:true
     },
+    avatar:{
+        type:String,
+        default:'/img/avatar_default.png'
+    },
     createdTime:{
         type:Date,
         default:Date.now

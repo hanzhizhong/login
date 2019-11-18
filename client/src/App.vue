@@ -49,5 +49,10 @@ export default {
     right: 0;
     padding: 10px;
   }
+  
 }
+.h-loading{
+    background-color:rgba(0,0,0,0.5)!important;
+    color:#ffffff!important;
+  }
 </style>

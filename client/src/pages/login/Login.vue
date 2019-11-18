@@ -13,7 +13,6 @@
             type="text"
             class="username"
             v-model="username"
-            @keyup.enter="loginSystem"
             @focus="clearErrorStyle($event)"
             @blur="checkRegularRequrie($event)"
           />
@@ -24,7 +23,6 @@
             type="password"
             class="password"
             v-model="password"
-            @keyup.enter="loginSystem"
             @focus="clearErrorStyle($event)"
             @blur="checkRegularRequrie($event)"
           />
@@ -41,6 +39,7 @@
             class="username"
             v-model="username"
             @blur="checkRegularRequrie($event)"
+            @focus="clearErrorStyle($event)"
           />
         </div>
         <div class="form">
@@ -50,6 +49,7 @@
             class="password"
             v-model="password"
             @blur="checkRegularRequrie($event)"
+            @focus="clearErrorStyle($event)"
           />
         </div>
         <div class="form">
@@ -58,11 +58,23 @@
         </div>
         <div class="form">
           <label>邮箱：</label>
-          <input type="text" class="email" v-model="email" @blur="checkRegularRequrie($event)" />
+          <input
+            type="text"
+            class="email"
+            v-model="email"
+            @blur="checkRegularRequrie($event)"
+            @focus="clearErrorStyle($event)"
+          />
         </div>
         <div class="form">
           <label>年龄：</label>
-          <input type="text" class="age" v-model="age" @blur="checkRegularRequrie($event)" />
+          <input
+            type="text"
+            class="age"
+            v-model="age"
+            @blur="checkRegularRequrie($event)"
+            @focus="clearErrorStyle($event)"
+          />
         </div>
         <div class="form">
           <label>性别：</label>
@@ -89,8 +101,11 @@ export default {
       isRegister: false,
       gender: "-1",
       age: 0,
-      email: "",
-      genderParams: { "-1": "保密", "0": "女", "1": "男" }
+      genderParams: { "-1": "保密", "0": "女", "1": "男" },
+      isCorrectOfUsername: false,
+      isCorrectOfPassword: false,
+      isCorrectOfEmail: false,
+      isCorrectOfAge: false
     };
   },
   methods: {
@@ -103,7 +118,7 @@ export default {
       this.isRegister = true;
     },
     loginSystem() {
-      if (this.username != "" && this.password != "") {
+      if (this.isCorrectOfUsername && this.isCorrectOfPassword) {
         let [username, password] = [this.username, this.password];
         this.$axios
           .post("/user/login", { username, password })
@@ -111,7 +126,7 @@ export default {
             if (dat.data.err != 0) {
               this.$Notice["error"](`登录出错:${dat.data.msg}`);
             } else {
-              localStorage.setItem("username", username);
+              sessionStorage.setItem("userInfo", JSON.stringify(dat.data.data));
               this.$router.push("/home");
             }
           })
@@ -119,12 +134,12 @@ export default {
             this.$Notice["error"](`登录出错:${err}`);
           });
       } else {
-        this.$Notice["error"]("姓名和密码不能为空");
+        this.$Notice["error"]("姓名和密码不能为空,且要符合提交条件");
         if (this.username == "") {
-          username.style.borderColor = "red";
+          document.querySelector(".username").style.borderColor = "red";
         }
         if (this.password == "") {
-          password.style.borderColor = "red";
+          document.querySelector(".password").style.borderColor = "red";
         }
       }
     },
@@ -141,6 +156,9 @@ export default {
               "用户名格式错误，只能包含字母数字下划线,最小5位字符"
             );
             event.target.style.borderColor = "red";
+            this.isCorrectOfUsername = false;
+          } else {
+            this.isCorrectOfUsername = true;
           }
           break;
         case "password":
@@ -149,35 +167,68 @@ export default {
               "密码格式错误，只能包含字母数字下划线,最小6位字符"
             );
             event.target.style.borderColor = "red";
+            this.isCorrectOfPassword = false;
+          } else {
+            this.isCorrectOfPassword = true;
           }
           break;
         case "email":
-          if (!/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(text)) {
-            this.$Message["info"](
-              "邮箱格式错误"
-            );
+          if (
+            !/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(text)
+          ) {
+            this.$Message["info"]("邮箱格式错误");
             event.target.style.borderColor = "red";
+            this.isCorrectOfEmail = false;
+          } else {
+            this.isCorrectOfEmail = true;
           }
           break;
         case "age":
-          if (!/[1-9][0-9]{1,2}/.test(text)) {
-            this.$Message["info"](
-              "密码格式错误，只能包含字母数字下划线,最小6位字符"
-            );
+          if (!/^[0-9]{1,2}$|^[1][0-1][0-9]$|^120$/.test(text)) {
+            this.$Message["info"]("年龄的限制在0-120之间");
             event.target.style.borderColor = "red";
+            this.isCorrectOfAge = false;
+          } else {
+            this.isCorrectOfAge = true;
           }
           break;
       }
     },
     //注册
     registerSystem() {
-      let [username, password, age, gender, email] = [
-        this.username,
-        this.password,
-        this.age,
-        this.gender,
-        this.email
-      ];
+      if (
+        this.isCorrectOfEmail &&
+        this.isCorrectOfUsername &&
+        this.isCorrectOfPassword &&
+        this.isCorrectOfAge
+      ) {
+        let [username, password, age, gender, email] = [
+          this.username,
+          this.password,
+          this.age,
+          this.gender,
+          this.email
+        ];
+        //console.log(username,password,age,gender,email)
+        this.$axios
+          .post("/user/register", { username, password, age, gender, email })
+          .then(res => {
+            if (res) {
+              if(res.data.err!=0){
+                this.$Notice['error'](`${res.data.msg}`)
+              }else{
+                sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+              this.$router.push({ name: "home" });
+              }
+              
+            }
+          })
+          .catch(err => {
+            this.$Notice["error"](`注册失败了:${err}`);
+          });
+      } else {
+        this.$Notice["error"]("提交的表单项中有不符合条件,请检查后重新注册");
+      }
     },
     //检验密码是否一致
     checkPassword() {

@@ -3,7 +3,7 @@
       <div class="avatar">
           <span><img :src="imgUrl"></span>{{username}}
       </div>
-      <Button class="h-btn h-btn-no-border h-btn-text-red"><i class="icon iconfont icon-tuichu"></i>退出</Button>
+      <Button @click="loginOut" class="h-btn h-btn-no-border h-btn-text-red"><i class="icon iconfont icon-tuichu"></i>退出</Button>
   </div>
 </template>
 
@@ -13,9 +13,37 @@ export default {
     data(){
         return{
             username:'admin',
-            imgUrl:defaultImg,
+            imgUrl:'',
+            baseImgUrl:"http://localhost:9000"
         }
     },
+    methods:{
+        getUserInfo(){
+            
+            let userInfo=sessionStorage.getItem('userInfo')
+            if(userInfo!=null || userInfo!='undefined'){
+                userInfo=JSON.parse(userInfo)
+                this.username=userInfo.username;
+                this.imgUrl=userInfo.avatar?this.baseImgUrl+userInfo.avatar:defaultImg;
+            }else{
+                this.$router.push({name:'login'})
+            }
+        },
+        loginOut(){
+            this.$axios.get('/user/loginOut').then(res=>{
+                if(res.data.err==0 || res.data.err==999){
+                    sessionStorage.removeItem('userInfo')
+                    this.$router.push({name:'login'})
+
+                }
+            }).catch(err=>{
+                this.$Notice['error'](`退出登录失败${err}`)
+            })
+        }
+    },
+    mounted(){
+        this.getUserInfo()
+    }
 }
 </script>
 

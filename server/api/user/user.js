@@ -29,7 +29,7 @@ router.post('/register',(req,res)=>{
                 res.json({
                     err:0,
                     msg:'注册成功了',
-                    data:{username,email,age,gender}
+                    data:{username,email,age,gender,avatar:dat.avatar}
                 })
                 
             }).catch(err=>{
@@ -56,7 +56,7 @@ router.post('/login',(req,res)=>{
             res.json({
                 err:0,
                 msg:'登录成功',
-                data:{username,email:data.email,gender:data.gender,age:data.age}
+                data:{username,email:data.email,gender:data.gender,age:data.age,avatar:data.avatar}
             })
         }else{
             User.find({username}).then(dat=>{
@@ -103,6 +103,23 @@ router.get('/find',(req,res)=>{
             msg:`未知错误：${err}`
         })
     })
+})
+
+router.get('/loginOut',(req,res)=>{
+    req.session.destroy((err)=>{
+        if(err){
+            res.json({
+                err:-1,
+                msg:`退出失败${err}`
+            })
+        }else{
+            res.json({
+                err:0,
+                msg:'退出成功'
+            })
+        }
+    });
+    
 })
 
 
