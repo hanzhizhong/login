@@ -21,7 +21,7 @@ export default {
         getUserInfo(){
             
             let userInfo=sessionStorage.getItem('userInfo')
-            if(userInfo!=null || userInfo!='undefined'){
+            if(userInfo!=null && userInfo!='undefined'){
                 userInfo=JSON.parse(userInfo)
                 this.username=userInfo.username;
                 this.imgUrl=userInfo.avatar?this.baseImgUrl+userInfo.avatar:defaultImg;
@@ -42,7 +42,7 @@ export default {
         }
     },
     mounted(){
-        this.getUserInfo()
+        this.getUserInfo() 
     }
 }
 </script>

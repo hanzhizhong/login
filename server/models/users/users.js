@@ -1,6 +1,6 @@
 const mongoose=require('mongoose')
-
-const userSchema=mongoose.Schema({
+const Schema=mongoose.Schema;
+const userSchema=new Schema({
     username:{
         type:String,
         required:true,
@@ -34,11 +34,5 @@ const userSchema=mongoose.Schema({
 
 const User=mongoose.model('user',userSchema)
 
-
-/* user.save().then(res=>{
-    console.log('res',res)
-}).catch(err=>{
-    console.log('error',err)
-}) */
 
 module.exports=User;

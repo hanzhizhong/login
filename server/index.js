@@ -18,7 +18,7 @@ app.use(session({
     saveUninitialized:true,
     secret:config.secret,
     cookie:{maxAge:7*24*60*60*1000}
-    //cookie:{maxAge:10*1000}
+    //cookie:{maxAge:10*1000} 
 }))
 
 //使用cors的第三方插件解决前端跨域问题
@@ -30,10 +30,10 @@ app.use(bodyParser.json())
 
 
 const user=require('./api/user/user')
+const food=require('./api/food/food')
 
 //在登录时判断是否在登录状态，如果不是登录状态，那么就要用户先登录
 app.use('/api',(req,res,next)=>{
-    console.log(req.url)
     if(req.url=='/user/login'||req.url=='/user/register'){
         next()
     }else{
@@ -52,7 +52,7 @@ app.use('/api',(req,res,next)=>{
 
 //使用路由的中间件
 app.use('/api/user',user)
-
+app.use('/api/food',food)
 app.listen(9000,function(){
     console.log('server is running at port 9000')
 }) 

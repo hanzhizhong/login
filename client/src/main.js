@@ -5,9 +5,9 @@ import "animate.css"
 import "heyui/themes/index.less";
 import "heyui/themes/common.less";
 import './assets/css/iconfont.css'
-import { install, Prototypes, Button, DropdownMenu,Pagination,Radio,Loading} from 'heyui';
+import { install, Prototypes, Button, DropdownMenu,Pagination,Radio,ImagePreview } from 'heyui';
 
-Vue.use(install,{components:{Button, DropdownMenu,Pagination,Radio,Loading},prototypes:Prototypes})
+Vue.use(install,{components:{Button, DropdownMenu,Pagination,Radio,ImagePreview},prototypes:Prototypes})
 
 
 import axios from 'axios'
