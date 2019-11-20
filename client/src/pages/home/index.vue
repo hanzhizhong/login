@@ -2,10 +2,10 @@
   <div class="home">
     <div class="search">
       <div class="search-wrap">
-        <input type="text" v-model="search" placeholder="活动ID,活动名称" />
-        <i class="icon iconfont icon-icon-test12"></i>
+        <input type="text" v-model="search" @keyup.enter="searchFoodInfo" placeholder="食物名称或者描述内容" />
+        <i class="icon iconfont icon-icon-test12" @click="searchFoodInfo"></i>
       </div>
-      <Button class="h-btn h-btn-primary">+新建活动</Button>
+      <Button class="h-btn h-btn-primary" @click="addNewFoodInfo">+新建活动</Button>
     </div>
     <table class="home-table">
       <thead>
@@ -32,7 +32,10 @@
             <td>{{item.address}}</td>
             <td>
               <Button class="h-btn h-btn-no-border h-btn-transparent h-btn-text-primary">查看</Button>
-              <Button class="h-btn h-btn-no-border h-btn-transparent h-btn-text-red" @click="delOneFood(item._id)">删除</Button>
+              <Button
+                class="h-btn h-btn-no-border h-btn-transparent h-btn-text-red"
+                @click="delOneFood(item._id)"
+              >删除</Button>
             </td>
           </tr>
         </template>
@@ -41,7 +44,7 @@
         </tr>
       </tbody>
     </table>
-    <Pagination v-model="pagination" layout="pager" align="right" @change="currentChange"></Pagination>
+    <Pagination v-if="tableList.length" v-model="pagination" layout="pager" align="right" @change="currentChange"></Pagination>
   </div>
 </template>
 
@@ -50,69 +53,97 @@ export default {
   components: {},
   data() {
     return {
-      baseImgUrl:'http://localhost:9000',
+      baseImgUrl: "http://localhost:9000",
       tableList: [],
       pagination: {
         page: 1,
         size: 10,
         total: 100
-      }
+      },
+      search: ""
     };
   },
-  computed: {
-    search: {
-      get() {
-        return "";
-      },
-      set(val) {
-        console.log("val", val);
-      } 
-    }
-  },
+  computed: {},
   methods: {
     getTrClass(data, index) {
       if (index == 0) {
         return ["bg-blue-color"];
       }
     },
-    getAllFoodList({...args}){
-      this.$axios.get('/food/findAll',{params:args}).then(ret=>{
-        if(ret.data.err!=999){
-          this.tableList=ret.data.list;
-          this.pagination.page=ret.data.pageIndex;
-          this.pagination.size=ret.data.pageSize;
-          this.pagination.total=ret.data.total;
-
-        }else{
-          this.$router.push({name:'login'})
-        }
-      }).catch(err=>{
-        this.$Notice['error'](`获取食物信息出错${err}`)
-      })
+    getAllFoodList({ ...args }) {
+      this.$axios
+        .get("/food/findAll", { params: args })
+        .then(ret => {
+          if (ret.data.err != 999) {
+            this.tableList = ret.data.list;
+            this.pagination.page = ret.data.pageIndex;
+            this.pagination.size = ret.data.pageSize;
+            this.pagination.total = ret.data.total;
+          } else {
+            this.$router.push({ name: "login" });
+          }
+        })
+        .catch(err => {
+          this.$Notice["error"](`获取食物信息出错${err}`);
+        });
     },
     //页面跳转
-    currentChange(value) { 
-      let pageIndex=value.cur;
-      this.getAllFoodList({pageIndex})
+    currentChange(value) {
+      let pageIndex = value.cur;
+      this.getAllFoodList({ pageIndex });
     },
     //图片预览
-    openPreview(data){
+    openPreview(data) {
       this.$ImagePreview(data);
     },
     //删除一条数据
-    delOneFood(_id){
-      this.$axios.delete('/food/delete',{params:{_id}}).then(ret=>{
-        if(ret.data.err==0){
-          this.$Notice['success']('删除成功')
-          this.getAllFoodList({pageIndex:this.pagination.page})
-        }
-      }).catch(err=>{
-        this.$Notice['error'](`删除失败了${err}`)
-      })
+    delOneFood(_id) {
+      this.$axios
+        .delete("/food/delete", { params: { _id } })
+        .then(ret => {
+          if (ret.data.err == 0) {
+            this.$Notice["success"]("删除成功");
+            this.getAllFoodList({ pageIndex: this.pagination.page });
+          }
+        })
+        .catch(err => {
+          this.$Notice["error"](`删除失败了${err}`);
+        });
+    },
+    //查询数据
+    searchFoodInfo() {
+      let [param, pageIndex, pageSize] = [
+        this.search,
+        this.pagination.page,
+        this.pagination.size
+      ];
+      if (param != "") {
+        this.$axios
+          .post("/food/findByCondition", { param })
+          .then(ret => {
+            if (ret.data.list.length > 0) {
+              this.tableList = ret.data.list;
+              this.pagination.page = ret.data.pageIndex;
+              this.pagination.size = ret.data.pageSize;
+              this.pagination.total = ret.data.total;
+            } else {
+              this.tableList = [];
+            }
+          })
+          .catch(err => {
+            this.$Notice["error"](`模糊查询失败:${err}`);
+          });
+      } else {
+        this.getAllFoodList({ pageIndex, pageSize });
+      }
+    },
+    //添加新的食物信息
+    addNewFoodInfo(){
+      this.$router.push({name:'addFood'})
     }
   },
-  mounted(){
-    this.getAllFoodList()
+  mounted() {
+    this.getAllFoodList();
   }
 };
 </script>

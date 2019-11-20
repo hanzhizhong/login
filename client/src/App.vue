@@ -4,7 +4,9 @@
       <v-header>top信息</v-header>
       <v-aside :menus="menus">左边</v-aside>
       <div class="main-content">
-        <router-view class="animated fadeIn"></router-view>
+        <keep-alive>
+          <router-view class="animated fadeIn"></router-view>
+        </keep-alive>
       </div>
     </template>
     <template v-else>
@@ -24,9 +26,21 @@ export default {
   data() {
     return {
       menus: [
-        { name: "活动列表", icons: "icon iconfont icon-icon-test",path:'/home' },
-        { name: "供应商", icons: "icon iconfont icon-icon-test37" ,path:'/agency'},
-        { name: "报告数据", icons: "icon iconfont icon-icon-test39" ,path:'/report'}
+        {
+          name: "活动列表",
+          icons: "icon iconfont icon-icon-test",
+          path: "/home"
+        },
+        {
+          name: "供应商",
+          icons: "icon iconfont icon-icon-test37",
+          path: "/agency"
+        },
+        {
+          name: "报告数据",
+          icons: "icon iconfont icon-icon-test39",
+          path: "/report"
+        }
       ]
     };
   }
@@ -49,10 +63,9 @@ export default {
     right: 0;
     padding: 10px;
   }
-  
 }
-.h-loading{
-    background-color:rgba(0,0,0,0.5)!important;
-    color:#ffffff!important;
-  }
+.h-loading {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+}
 </style>

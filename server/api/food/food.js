@@ -53,7 +53,7 @@ router.delete('/delete',(req,res)=>{
 //查询
 router.get('/findAll',(req,res)=>{
     let {pageIndex=1,pageSize=5}=req.query
-    Food.find().count().then(count=>{
+    Food.find().countDocuments().then(count=>{
         Food.find().skip((Number(pageIndex)-1)*Number(pageSize)).limit(Number(pageSize)).then(ret=>{
             res.json({
                 err:0,
@@ -75,6 +75,42 @@ router.get('/findAll',(req,res)=>{
         res.json({
             err:-1,
             msg:`未知错误${err}`
+        })
+    })
+})
+//模糊查询
+router.post('/findByCondition',(req,res)=>{
+    let {param,pageIndex=1,pageSize=5}=req.body;
+    Food.find({$or:[{foodname:param},{description:{$regex:param}}]}).countDocuments().then(count=>{
+        if(count){
+            Food.find({$or:[{foodname:param},{description:{$regex:param}}]}).skip((Number(pageIndex-1)*Number(pageSize))).limit(Number(pageSize)).then(ret=>{
+                res.json({
+                    err:0,
+                    msg:'success',
+                    list:ret,
+                    pageIndex:Number(pageIndex),
+                    total:count,
+                    pages:Math.ceil(count/Number(pageSize)),
+                    pageSize:Number(pageSize),
+                })
+            }).catch(error=>{
+                res.json({
+                    err:-1,
+                    msg:`未知错误:${error}`
+                })
+            })
+        }else{
+            res.json({
+                err:0,
+                msg:'success',
+                list:[]
+            })
+        }
+        
+    }).catch(err=>{
+        res.json({
+            err:-1,
+            msg:`未知错误:${err}`
         })
     })
 })

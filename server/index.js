@@ -19,7 +19,7 @@ app.use(session({
     secret:config.secret,
     cookie:{maxAge:7*24*60*60*1000}
     //cookie:{maxAge:10*1000} 
-}))
+})) 
 
 //使用cors的第三方插件解决前端跨域问题
 //app.use(cors())
@@ -37,7 +37,6 @@ app.use('/api',(req,res,next)=>{
     if(req.url=='/user/login'||req.url=='/user/register'){
         next()
     }else{
-        console.log('isLogin',req.session.isLogin)
         if(req.session.isLogin){
             next()
         }else{
