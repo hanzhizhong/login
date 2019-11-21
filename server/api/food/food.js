@@ -68,7 +68,7 @@ router.get('/findAll',(req,res)=>{
             res.json({
                 err:-1,
                 msg:`未知错误${error}`
-            })
+            })  
         })
     })
     .catch(err=>{
@@ -114,5 +114,8 @@ router.post('/findByCondition',(req,res)=>{
         })
     })
 })
-
+//添加食物
+router.post('/add',(req,res)=>{
+    
+})
 module.exports=router
