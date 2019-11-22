@@ -8,6 +8,7 @@
     <div class="food-data">
       <label>食物名称:</label>
       <input type="text" v-model="foodname" />
+      <em class="red-color">*</em>
     </div>
     <div class="food-data">
       <label>价格:</label>
@@ -17,14 +18,22 @@
       <label>食品类型:</label>
       <select name="categroy" v-model="categroy">
         <option value>请选择食品类型</option>
+        <template v-if="typeNameList.length>0">
+          <option
+            v-for="(item,index) in typeNameList"
+            :key="index"
+            :value="item._id"
+          >{{item.typeName}}</option>
+        </template>
       </select>
+      <em class="red-color">*</em>
     </div>
 
     <div class="food-data">
       <label>图片展示:</label>
       <div class="img-container">
         <i class="icon iconfont icon-icon-test32" v-if="!isShowPic"></i>
-        <input type="file" @change="pictureChoose($event)" />
+        <input type="file" @change="pictureChoose($event)" name="picture" />
         <div v-if="isShowPic" class="img-food">
           <img :src="showPic" alt />
           <span>{{imgName}}</span>
@@ -57,6 +66,10 @@
       </select>
       <input type="text" v-model="detail" />
     </div>
+    <div class="btn-submit">
+      <Button class="h-btn h-btn-primary" @click="saveFood2Store">保存</Button>
+      <Button class="h-btn h-btn-gray">取消</Button>
+    </div>
   </div>
 </template>
 
@@ -71,21 +84,25 @@ export default {
       province: "",
       city: "",
       area: "",
+      typeName: "",
       detail: "",
+      address: "",
       isShowPic: false,
       imgName: "",
       showPic: "",
       cityList: [],
       cities: [],
-      areaList: []
+      areaList: [],
+      picFile: null,
+      typeNameList: []
     };
   },
   methods: {
     pictureChoose(e) {
-      let file = e.target.files[0];
-      this.imgName = file.name;
+      this.picFile = e.target.files[0];
+      this.imgName = this.picFile.name;
       this.isShowPic = true;
-      this.showPic = window.URL.createObjectURL(file);
+      this.showPic = window.URL.createObjectURL(this.picFile);
     },
     getAllCity() {
       this.$axios
@@ -103,8 +120,8 @@ export default {
     },
     //获取澄市名称
     chooseCityName() {
-      this.city=""
-      this.area=''
+      this.city = "";
+      this.area = "";
       let pids = this.cityList.filter((item, index) => {
         return this.province == item.pid;
       });
@@ -112,15 +129,74 @@ export default {
     },
     //获取行政区的名称
     chooseAreaName() {
-      this.area=''
+      this.area = "";
       let cids = this.cityList.filter((item, index) => {
         return this.city == item.pid;
       });
 
       this.areaList = cids;
+    },
+    //添加/保存食物
+    saveFood2Store() {
+      if (this.detail) {
+        let prov = this.cityList.find((item, index) => {
+          return this.province == item.cid;
+        });
+        let cty = this.cityList.find((item, index) => {
+          return this.city == item.cid;
+        });
+        let zone = this.cityList.find((item, index) => {
+          return (this.area = item.cid);
+        });
+
+        this.address =
+          prov.cTitle +
+          "/" +
+          cty.cTitle +
+          "/" +
+          zone.cTitle +
+          "/" +
+          this.detail;
+      }
+      //console.log(this.foodname,this.price,this.description,this.categroy,this.picFile,this.address)
+      let formdata = new FormData();
+      formdata.append("foodname",this.foodname);
+      formdata.append("price",this.price);
+      formdata.append("description",this.description);
+      formdata.append("categroy",this.categroy);
+      formdata.append("picture",this.picFile);
+      formdata.append("address",this.address);
+
+      if (this.foodname == "" || this.categroy == "") {
+        this.$Notice["error"]("食物名称和食物类型不能为空");
+        return;
+      } else {
+        this.$axios
+          .post("/food/add",formdata)
+          .then(ret => {
+            console.log("add-food", ret);
+          })
+          .catch(err => {
+            this.$Notice["error"](`添加食物失败:${err}`);
+          });
+      }
+    },
+    //获取食品分类
+    getCategroy() {
+      this.$axios
+        .get("/categroy/all")
+        .then(ret => {
+          if (ret.data.list.length > 0) {
+            this.typeNameList = ret.data.list;
+          }
+        })
+        .catch(err => {
+          this.$Notice["error"](`获取食品类型错误${err}`);
+        });
     }
   },
   mounted() {
+    this.getCategroy();
     this.getAllCity();
   }
 };
@@ -158,6 +234,12 @@ h3 {
   textarea {
     min-width: 400px;
     resize: none;
+  }
+  input {
+    margin-right: 10px;
+  }
+  em {
+    font-size: 20px;
   }
   select {
     height: 40px;
@@ -227,6 +309,15 @@ h3 {
         }
       }
     }
+  }
+}
+.btn-submit {
+  display: flex;
+  justify-content: flex-start;
+
+  padding: 20px 170px;
+  button {
+    margin-right: 20px;
   }
 }
 </style>

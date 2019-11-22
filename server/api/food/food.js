@@ -2,18 +2,23 @@ const express=require('express')
 const router=express.Router()
 
 const Food=require('../../models/foods/foods')
+const multer=require('multer')
+const upload=multer({dest:'uploads/'})
 
 //食物的增删改查 create read delete update
 //create
-router.post('/add',(req,res)=>{
+router.post('/add',upload.single('picture'),(req,res)=>{
+    console.log(req.file)
+    console.log(req.body)
     let {foodname}=req.body;
-    Food.find({foodname}).then(ret=>{
+    /* Food.find({foodname}).then(ret=>{
         if(ret.length>0){
             res.json({
                 err:2,
                 msg:'食物名已经存在，请重新命名'
             })
         }else{
+            console.log('aa',req.body)
             new Food(req.body).save().then(result=>{
                 res.json({
                     err:0,
@@ -31,7 +36,7 @@ router.post('/add',(req,res)=>{
             err:-1,
             msg:`未知的错误:${err}`
         })
-    })
+    }) */
 })
 
 //删除
@@ -114,8 +119,5 @@ router.post('/findByCondition',(req,res)=>{
         })
     })
 })
-//添加食物
-router.post('/add',(req,res)=>{
-    
-})
+
 module.exports=router

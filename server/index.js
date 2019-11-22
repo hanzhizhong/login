@@ -32,6 +32,7 @@ app.use(bodyParser.json())
 const user=require('./api/user/user')
 const food=require('./api/food/food')
 const city=require('./api/city/city')
+const categroy=require('./api/categroy/categroy')
 
 //在登录时判断是否在登录状态，如果不是登录状态，那么就要用户先登录
 app.use('/api',(req,res,next)=>{
@@ -54,6 +55,7 @@ app.use('/api',(req,res,next)=>{
 app.use('/api/user',user)
 app.use('/api/food',food)
 app.use('/api/city',city)
+app.use('/api/categroy',categroy)
 app.listen(9000,function(){
     console.log('server is running at port 9000')
 }) 

@@ -21,7 +21,7 @@ const foodSchema=new Schema({
         required:false
     },
     categroy:{
-        type:Number,
+        type:String,
         required:true
 
     },
