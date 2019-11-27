@@ -10,6 +10,8 @@ const path=require('path')
 
 //配置静态文件的路径
 app.use(express.static(path.join(__dirname,'public')))
+//upload上传文件的路径
+app.use('/upload',express.static(path.join(__dirname,'upload')))
 
 //配置session的中间件
 app.use(session({

@@ -174,7 +174,15 @@ export default {
         this.$axios
           .post("/food/add",formdata)
           .then(ret => {
-            console.log("add-food", ret);
+            if(ret.data.err!=999){
+              if(ret.data.err==2||ret.data.err==-1||ret.data.err==1){
+                this.$Notice['error'](`${ret.data.msg}`)
+                return 
+              }
+              this.$router.push({name:'home'})
+            }else{
+              this.$router.push({name:'login'})
+            }
           })
           .catch(err => {
             this.$Notice["error"](`添加食物失败:${err}`);
