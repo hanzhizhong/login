@@ -4,7 +4,7 @@
       <v-header>top信息</v-header>
       <v-aside :menus="menus">左边</v-aside>
       <div class="main-content">
-        <keep-alive>
+        <keep-alive :exclude="['edit']">
           <router-view class="animated fadeIn"></router-view>
         </keep-alive>
       </div>

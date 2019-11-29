@@ -22,7 +22,7 @@
           <tr v-for="(item,index) in tableList" :key="index">
             <td>{{item.foodname}}</td>
             <td>{{item.price}}</td>
-            <td>{{item.categroy}}</td>
+            <td>{{item.categroy|turn2Text}}</td>
             <td>
               <p style="display:flex;justify-content:center;">
                 <ImagePreview :datas="baseImgUrl+item.picture" :width="70" @click="openPreview"></ImagePreview>
@@ -31,7 +31,7 @@
             <td>{{item.description}}</td>
             <td>{{item.address}}</td>
             <td>
-              <Button class="h-btn h-btn-no-border h-btn-transparent h-btn-text-primary">查看</Button>
+              <Button @click="editFoodById(item._id)" class="h-btn h-btn-no-border h-btn-transparent h-btn-text-primary">查看</Button>
               <Button
                 class="h-btn h-btn-no-border h-btn-transparent h-btn-text-red"
                 @click="delOneFood(item._id)"
@@ -44,11 +44,18 @@
         </tr>
       </tbody>
     </table>
-    <Pagination v-if="tableList.length" v-model="pagination" layout="pager" align="right" @change="currentChange"></Pagination>
+    <Pagination
+      v-if="tableList.length"
+      v-model="pagination"
+      layout="pager"
+      align="right"
+      @change="currentChange"
+    ></Pagination>
   </div>
 </template>
 
 <script>
+let categroyList= []
 export default {
   components: {},
   data() {
@@ -60,10 +67,23 @@ export default {
         size: 10,
         total: 100
       },
+      //categroyList: [],
       search: ""
     };
   },
-  computed: {},
+  filters: {
+    turn2Text(val){
+      let result=categroyList.find((item,index)=>{
+        return item._id==val
+      })
+      if(result!=undefined){
+        return result.typeName
+      }else{
+        return '-'
+      }
+      
+    }
+  },
   methods: {
     getTrClass(data, index) {
       if (index == 0) {
@@ -138,12 +158,28 @@ export default {
       }
     },
     //添加新的食物信息
-    addNewFoodInfo(){
-      this.$router.push({name:'addFood'})
+    addNewFoodInfo() {
+      this.$router.push({ name: "addFood" });
+    },
+    //获取所有的食品类型
+    getAllCategroyName() {
+      this.$axios
+        .get("/categroy/all")
+        .then(ret => {
+          categroyList = ret.data.list;
+        })
+        .catch(err => {
+          this.$Notice["error"](`获取食品类型出错:${err}`);
+        });
+    },
+    //编辑所选项，编程是导航
+    editFoodById(arg){
+      this.$router.push({name:'editFood',params:{arg}})
     }
   },
   mounted() {
     this.getAllFoodList();
+    this.getAllCategroyName();
   }
 };
 </script>

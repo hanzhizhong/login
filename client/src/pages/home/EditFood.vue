@@ -75,6 +75,7 @@
 
 <script>
 export default {
+  name: "edit",
   data() {
     return {
       foodname: "",
@@ -94,8 +95,12 @@ export default {
       cities: [],
       areaList: [],
       picFile: null,
-      typeNameList: []
+      typeNameList: [],
+      baseImgURL: "http://localhost:9000"
     };
+  },
+  watch: {
+    
   },
   methods: {
     pictureChoose(e) {
@@ -160,28 +165,32 @@ export default {
       }
       //console.log(this.foodname,this.price,this.description,this.categroy,this.picFile,this.address)
       let formdata = new FormData();
-      formdata.append("foodname",this.foodname);
-      formdata.append("price",this.price);
-      formdata.append("description",this.description);
-      formdata.append("categroy",this.categroy);
-      formdata.append("picture",this.picFile);
-      formdata.append("address",this.address);
+      formdata.append("foodname", this.foodname);
+      formdata.append("price", this.price);
+      formdata.append("description", this.description);
+      formdata.append("categroy", this.categroy);
+      formdata.append("picture", this.picFile);
+      formdata.append("address", this.address);
 
       if (this.foodname == "" || this.categroy == "") {
         this.$Notice["error"]("食物名称和食物类型不能为空");
         return;
       } else {
         this.$axios
-          .post("/food/add",formdata)
+          .post("/food/add", formdata)
           .then(ret => {
-            if(ret.data.err!=999){
-              if(ret.data.err==2||ret.data.err==-1||ret.data.err==1){
-                this.$Notice['error'](`${ret.data.msg}`)
-                return 
+            if (ret.data.err != 999) {
+              if (
+                ret.data.err == 2 ||
+                ret.data.err == -1 ||
+                ret.data.err == 1
+              ) {
+                this.$Notice["error"](`${ret.data.msg}`);
+                return;
               }
-              this.$router.push({name:'home'})
-            }else{
-              this.$router.push({name:'login'})
+              this.$router.push({ name: "home" });
+            } else {
+              this.$router.push({ name: "login" });
             }
           })
           .catch(err => {
@@ -201,11 +210,39 @@ export default {
         .catch(err => {
           this.$Notice["error"](`获取食品类型错误${err}`);
         });
+    },
+    //根据_id值获取当前编辑的项目
+    getFoodInfoById() {
+      let _id = this.$route.params.arg;
+      if (_id != undefined) {
+        this.$axios
+          .get("/food/findOne", { params: { _id } })
+          .then(ret => {
+            console.log(ret);
+            if (ret.data.list) {
+              this.foodname = ret.data.list.foodname;
+              this.price = ret.data.list.price;
+              this.categroy = ret.data.list.categroy;
+              this.description = ret.data.list.description;
+              this.address = ret.data.list.address;
+              this.showPic = this.baseImgURL + ret.data.list.picture;
+              if (this.showPic) {
+                this.isShowPic = true;
+              }
+            }
+          })
+          .catch(err => {
+            this.$Notice["error"](`获取食物信息失败了:${err}`);
+          });
+      } else {
+        this.$router.go(-1);
+      }
     }
   },
   mounted() {
     this.getCategroy();
     this.getAllCity();
+    this.getFoodInfoById();
   }
 };
 </script>

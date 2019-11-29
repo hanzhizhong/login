@@ -86,32 +86,7 @@ router.post('/add', (req, res) => {
 
     })
 
-    /* Food.find({foodname}).then(ret=>{
-        if(ret.length>0){
-            res.json({
-                err:2,
-                msg:'食物名已经存在，请重新命名'
-            })
-        }else{
-            console.log('aa',req.body)
-            new Food(req.body).save().then(result=>{
-                res.json({
-                    err:0,
-                    msg:'食物添加成功'
-                })
-            }).catch(error=>{
-                res.json({
-                    err:1,
-                    msg:`食物添加失败：${error}`
-                })
-            })
-        }
-    }).catch(err=>{
-        res.json({
-            err:-1,
-            msg:`未知的错误:${err}`
-        })
-    }) */
+    
 })
 
 //删除
@@ -140,7 +115,7 @@ router.get('/findAll', (req, res) => {
         pageIndex = 1, pageSize = 5
     } = req.query
     Food.find().countDocuments().then(count => {
-            Food.find().skip((Number(pageIndex) - 1) * Number(pageSize)).limit(Number(pageSize)).then(ret => {
+            Food.find().sort({createdTime:-1}).skip((Number(pageIndex) - 1) * Number(pageSize)).limit(Number(pageSize)).then(ret => {
                 res.json({
                     err: 0,
                     msg: 'success',
@@ -189,7 +164,7 @@ router.post('/findByCondition', (req, res) => {
                         $regex: param
                     }
                 }]
-            }).skip((Number(pageIndex - 1) * Number(pageSize))).limit(Number(pageSize)).then(ret => {
+            }).sort({createdTime:-1}).skip((Number(pageIndex - 1) * Number(pageSize))).limit(Number(pageSize)).then(ret => {
                 res.json({
                     err: 0,
                     msg: 'success',
@@ -218,6 +193,52 @@ router.post('/findByCondition', (req, res) => {
             err: -1,
             msg: `未知错误:${err}`
         })
+    })
+})
+
+//查询一条数据
+router.get('/findOne',(req,res)=>{
+    let {_id}=req.query 
+    Food.findOne({_id}).then(ret=>{
+            res.json({
+                err:0,
+                msg:'success',
+                list:ret 
+            })
+    }).catch(err=>{
+        res.json({
+            err:-1,
+            msg:`未知错误：${err}`
+        })
+    })
+})
+
+//编辑
+router.put('/update',(req,res)=>{
+    let form =new formidable.IncomingForm()
+    form.uploadDir='upload';
+    form.keepExtensions=true;
+    form.maxFileSize=2*1024*1024
+    
+    form.parse(req,(err,fields,files)=>{
+        if(err){
+            res.json({
+                err:-1,
+                msg:`修改失败：${err}`
+            })
+            return 
+
+        }
+        let {
+            _id,
+            foodname,
+            price,
+            description,
+            categroy,
+            address
+        } = fields;
+        console.log('fields',fields);
+        console.log('file',files)
     })
 })
 
