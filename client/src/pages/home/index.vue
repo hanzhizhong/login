@@ -57,7 +57,7 @@
 <script>
 let categroyList= []
 export default {
-  components: {},
+  name:'home',
   data() {
     return {
       baseImgUrl: "http://localhost:9000",

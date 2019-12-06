@@ -94,7 +94,7 @@ router.delete('/delete', (req, res) => {
     let {
         _id
     } = req.query
-    Food.remove({
+    Food.deleteOne({
         _id
     }).then(ret => {
         res.json({
@@ -237,8 +237,18 @@ router.put('/update',(req,res)=>{
             categroy,
             address
         } = fields;
-        console.log('fields',fields);
-        console.log('file',files)
+        Food.updateOne({_id},{$set:{foodname,price,description,categroy,address}}).then(ret=>{
+            res.json({
+                err:0,
+                msg:'update success',
+                list:ret 
+            })
+        }).catch(err=>{
+            res.json({
+                err:-1,
+                msg:`未知错误:${err}`
+            })
+        })
     })
 })
 

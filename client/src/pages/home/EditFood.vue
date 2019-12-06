@@ -45,6 +45,10 @@
       <textarea name="description" cols="30" rows="10" v-model="description"></textarea>
     </div>
     <div class="food-data">
+      <label>地址信息:</label> 
+      <span style="margin-right:20px;">{{address}}</span><Button class="h-btn h-btn-yellow h-btn-xs" @click="changeAddress($event)">修改</Button>
+    </div>
+    <div class="food-data" v-if="isChangeAddress">
       <label>地址信息:</label>
       <select name="province" v-model="province" @change="chooseCityName">
         <option value>请选择省市</option>
@@ -67,8 +71,8 @@
       <input type="text" v-model="detail" />
     </div>
     <div class="btn-submit">
-      <Button class="h-btn h-btn-primary" @click="saveFood2Store">保存</Button>
-      <Button class="h-btn h-btn-gray">取消</Button>
+      <Button class="h-btn h-btn-primary" @click="updateFood2Store">保存</Button>
+      <Button class="h-btn h-btn-gray" @click="$router.go(-1)">取消</Button>
     </div>
   </div>
 </template>
@@ -96,11 +100,13 @@ export default {
       areaList: [],
       picFile: null,
       typeNameList: [],
-      baseImgURL: "http://localhost:9000"
+      baseImgURL: "http://localhost:9000",
+      isChangeAddress:false,
+      _id:''
     };
   },
   watch: {
-    
+        
   },
   methods: {
     pictureChoose(e) {
@@ -142,7 +148,7 @@ export default {
       this.areaList = cids;
     },
     //添加/保存食物
-    saveFood2Store() {
+    updateFood2Store() {
       if (this.detail) {
         let prov = this.cityList.find((item, index) => {
           return this.province == item.cid;
@@ -150,8 +156,9 @@ export default {
         let cty = this.cityList.find((item, index) => {
           return this.city == item.cid;
         });
+        
         let zone = this.cityList.find((item, index) => {
-          return (this.area = item.cid);
+          return this.area == item.cid;
         });
 
         this.address =
@@ -165,6 +172,7 @@ export default {
       }
       //console.log(this.foodname,this.price,this.description,this.categroy,this.picFile,this.address)
       let formdata = new FormData();
+      formdata.append('_id',this._id)
       formdata.append("foodname", this.foodname);
       formdata.append("price", this.price);
       formdata.append("description", this.description);
@@ -177,7 +185,7 @@ export default {
         return;
       } else {
         this.$axios
-          .post("/food/add", formdata)
+          .put("/food/update", formdata)
           .then(ret => {
             if (ret.data.err != 999) {
               if (
@@ -213,12 +221,11 @@ export default {
     },
     //根据_id值获取当前编辑的项目
     getFoodInfoById() {
-      let _id = this.$route.params.arg;
-      if (_id != undefined) {
+      this._id = this.$route.params.arg;
+      if (this._id != undefined) {
         this.$axios
-          .get("/food/findOne", { params: { _id } })
-          .then(ret => {
-            console.log(ret);
+          .get("/food/findOne", { params: { _id:this._id } })
+          .then(ret => {  
             if (ret.data.list) {
               this.foodname = ret.data.list.foodname;
               this.price = ret.data.list.price;
@@ -236,6 +243,16 @@ export default {
           });
       } else {
         this.$router.go(-1);
+      }
+    },
+    //修改地址
+    changeAddress(ev){
+      if(!this.isChangeAddress){
+        this.isChangeAddress=true;
+        ev.target.textContent="取消"
+      }else{
+        this.isChangeAddress=false;
+        ev.target.textContent="修改"
       }
     }
   },
