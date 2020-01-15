@@ -19,7 +19,7 @@ router.post('/register',(req,res)=>{
         if(data.length>0){
             res.json({
                 err:1,
-                msg:'用户已经存在,请直接登录'
+                msg:'用户已经存在,请直接登录'  
             })
         }else{
             password=md5(password)
@@ -38,7 +38,7 @@ router.post('/register',(req,res)=>{
                     msg:`注册失败了:${err}`
                 })
             })
-        }
+        }  
     }).catch(err=>{
         res.json({
             err:-1,

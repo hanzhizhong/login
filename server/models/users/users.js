@@ -27,7 +27,7 @@ const userSchema=new Schema({
         default:'/img/avatar_default.png'
     },
     createdTime:{
-        type:Date,
+        type:Date, 
         default:Date.now
     }
 })
